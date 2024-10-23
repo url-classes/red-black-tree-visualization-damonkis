@@ -167,6 +167,106 @@ class RBTree {
         this.fixInsert(newNode);
     }
 
+    private fixDelete(x: NodeRBT): void {
+        while (x !== this.root && x.getColor() === "BLACK") {
+            if (x === x.getFather().getLeftChild()) {
+                let sibling = x.getFather().getRightChild();
+                if (sibling.getColor() === "RED") {
+                    sibling.setNodeAsBlack(); // Aquí el cambio
+                    x.getFather().setNodeAsRed();
+                    this.leftRotate(x.getFather());
+                    sibling = x.getFather().getRightChild();
+                }
+                if (sibling.getLeftChild().getColor() === "BLACK" && sibling.getRightChild().getColor() === "BLACK") {
+                    sibling.setNodeAsRed(); // Aquí el cambio
+                    x = x.getFather();
+                } else {
+                    if (sibling.getRightChild().getColor() === "BLACK") {
+                        sibling.getLeftChild().setNodeAsBlack();
+                        sibling.setNodeAsRed();
+                        this.rightRotate(sibling);
+                        sibling = x.getFather().getRightChild();
+                    }
+                    sibling.setNodeAsBlack(); // Aquí también el cambio
+                    x.getFather().setNodeAsBlack();
+                    sibling.getRightChild().setNodeAsBlack();
+                    this.leftRotate(x.getFather());
+                    x = this.root;
+                }
+            } else {
+                // Sección espejo para el hijo derecho...
+            }
+        }
+        x.setNodeAsBlack();
+    }
+    
+
+    private transplant(u: NodeRBT, v: NodeRBT): void {
+        if (u.getFather() === this.leaf) {
+            this.root = v;
+        } else if (u === u.getFather().getLeftChild()) {
+            u.getFather().setLeftChild(v);
+        } else {
+            u.getFather().setRightChild(v);
+        }
+        v.setFather(u.getFather());
+    }
+
+    public delete(data: number): void {
+        let z: NodeRBT = this.search(data);
+        if (z === this.leaf) return;
+
+        let y: NodeRBT = z;
+        let yOriginalColor: string = y.getColor();
+        let x: NodeRBT;
+
+        if (z.getLeftChild() === this.leaf) {
+            x = z.getRightChild();
+            this.transplant(z, z.getRightChild());
+        } else if (z.getRightChild() === this.leaf) {
+            x = z.getLeftChild();
+            this.transplant(z, z.getLeftChild());
+        } else {
+            y = this.minimum(z.getRightChild());
+            yOriginalColor = y.getColor();
+            x = y.getRightChild();
+            if (y.getFather() === z) {
+                x.setFather(y);
+            } else {
+                this.transplant(y, y.getRightChild());
+                y.setRightChild(z.getRightChild());
+                y.getRightChild().setFather(y);
+            }
+            this.transplant(z, y);
+            y.setLeftChild(z.getLeftChild());
+            y.getLeftChild().setFather(y);
+            y.setNodeAsBlack();
+        }
+
+        if (yOriginalColor === "BLACK") {
+            this.fixDelete(x);
+        }
+    }
+
+    private search(data: number): NodeRBT {
+        let current = this.root;
+        while (current !== this.leaf && current.getData() !== data) {
+            if (data < current.getData()) {
+                current = current.getLeftChild();
+            } else {
+                current = current.getRightChild();
+            }
+        }
+        return current;
+    }
+
+    private minimum(n: NodeRBT): NodeRBT {
+        while (n.getLeftChild() !== this.leaf) {
+            n = n.getLeftChild();
+        }
+        return n;
+    }
+
     // Obtener la disposición del árbol para dibujar
     public getTreeLayout(): TreeNodePosition | null {
         if (this.root === this.leaf) return null;
