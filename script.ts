@@ -395,7 +395,7 @@ document.getElementById("insert-node")!.addEventListener("click", () => {
 });
 
 document.getElementById("delete-node")!.addEventListener("click", () => {
-    const value = parseInt((document.getElementById("node-value") as HTMLInputElement).value);
+    const value = parseInt((document.getElementById("delete-value") as HTMLInputElement).value);
     if (!isNaN(value)) {
         tree.delete(value); // Elimina el nodo con el valor especificado
         tree.drawTree();    // Redibuja el árbol
@@ -419,5 +419,24 @@ document.getElementById("show-traversals")!.addEventListener("click", () => {
         <p>Preorden: ${preorderResult.join(", ")}</p>
         <p>Postorden: ${postorderResult.join(", ")}</p>
     `;
+});
+
+document.getElementById("search-node")!.addEventListener("click", () => {
+    const value = parseInt((document.getElementById("search-value") as HTMLInputElement).value);
+    const result = tree.search(value);
+
+    if (result.getData() !== 0) {
+        const parent = result.getFather().getData() !== 0 ? result.getFather().getData() : "null";
+        const leftChild = result.getLeftChild().getData() !== 0 ? result.getLeftChild().getData() : "null";
+        const rightChild = result.getRightChild().getData() !== 0 ? result.getRightChild().getData() : "null";
+
+        alert(`Nodo encontrado: ${result.getData()}\n` +
+              `Color: ${result.getColor()}\n` +
+              `Padre: ${parent}\n` +
+              `Hijo Izquierdo: ${leftChild}\n` +
+              `Hijo Derecho: ${rightChild}`);
+    } else {
+        alert("Nodo no encontrado");
+    }
 });
 
