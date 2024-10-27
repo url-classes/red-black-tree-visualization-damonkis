@@ -358,7 +358,7 @@ document.getElementById("insert-node").addEventListener("click", function () {
     }
 });
 document.getElementById("delete-node").addEventListener("click", function () {
-    var value = parseInt(document.getElementById("node-value").value);
+    var value = parseInt(document.getElementById("delete-value").value);
     if (!isNaN(value)) {
         tree.delete(value); // Elimina el nodo con el valor especificado
         tree.drawTree(); // Redibuja el árbol
@@ -375,4 +375,21 @@ document.getElementById("show-traversals").addEventListener("click", function ()
     var postorderResult = tree.postorder();
     var resultsDiv = document.getElementById("traversal-results");
     resultsDiv.innerHTML = "\n        <p>Inorden: ".concat(inorderResult.join(", "), "</p>\n        <p>Preorden: ").concat(preorderResult.join(", "), "</p>\n        <p>Postorden: ").concat(postorderResult.join(", "), "</p>\n    ");
+});
+document.getElementById("search-node").addEventListener("click", function () {
+    var value = parseInt(document.getElementById("search-value").value);
+    var result = tree.search(value);
+    if (result.getData() !== 0) {
+        var parent_2 = result.getFather().getData() !== 0 ? result.getFather().getData() : "null";
+        var leftChild = result.getLeftChild().getData() !== 0 ? result.getLeftChild().getData() : "null";
+        var rightChild = result.getRightChild().getData() !== 0 ? result.getRightChild().getData() : "null";
+        alert("Nodo encontrado: ".concat(result.getData(), "\n") +
+            "Color: ".concat(result.getColor(), "\n") +
+            "Padre: ".concat(parent_2, "\n") +
+            "Hijo Izquierdo: ".concat(leftChild, "\n") +
+            "Hijo Derecho: ".concat(rightChild));
+    }
+    else {
+        alert("Nodo no encontrado");
+    }
 });
