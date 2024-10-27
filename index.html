@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visualizador de Árbol Rojo-Negro</title>
+    
+    <!-- Fuente de Google -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Enlace al archivo CSS externo -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1>Visualizador de Árbol Rojo-Negro</h1>
+
+    <div id="control-panel">
+        <div class="input-group">
+            <input type="number" id="node-value" placeholder="Valor del nodo" />
+            <button id="insert-node">Insertar Nodo</button>
+        </div>
+        <div class="input-group">
+            <input type="number" id="search-value" placeholder="Buscar nodo" />
+            <button id="search-node">Buscar Nodo</button>
+        </div>
+        <div class="input-group">
+            <input type="number" id="delete-value" placeholder="Valor a eliminar">
+            <button id="delete-node">Eliminar Nodo</button>
+        </div>
+        <div class="button-group">
+            <button id="show-traversals">Mostrar Recorridos</button>
+            <button id="toggle-theme">Modo Claro/Oscuro</button>
+        </div>
+    </div>
+
+    <div id="visualization">
+        <svg width="800" height="500" id="tree-canvas"></svg>
+    </div>
+
+    <div id="traversal-results" class="results-container"></div>
+
+    <!-- Importar D3.js -->
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <script src="dist/script.js"></script>
+
+    <!-- Script para alternar el tema -->
+    <script>
+        const toggleButton = document.getElementById('toggle-theme');
+        toggleButton.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+        });
+    </script>
+</body>
+</html>
+
