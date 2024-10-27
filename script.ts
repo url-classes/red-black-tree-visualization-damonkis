@@ -319,6 +319,50 @@ class RBTree {
 
         drawNode(this.root, width / 2, 40, 1);
     }
+    // Recorrido en inorden
+    public inorder(): number[] {
+        const result: number[] = [];
+        this.inorderHelper(this.root, result);
+        return result;
+    }
+    
+    private inorderHelper(node: NodeRBT, result: number[]): void {
+        if (node !== this.leaf) {
+            this.inorderHelper(node.getLeftChild(), result);
+            result.push(node.getData());
+            this.inorderHelper(node.getRightChild(), result);
+        }
+    }
+    
+    // Recorrido en preorden
+    public preorder(): number[] {
+        const result: number[] = [];
+        this.preorderHelper(this.root, result);
+        return result;
+    }
+    
+    private preorderHelper(node: NodeRBT, result: number[]): void {
+        if (node !== this.leaf) {
+            result.push(node.getData());
+            this.preorderHelper(node.getLeftChild(), result);
+            this.preorderHelper(node.getRightChild(), result);
+        }
+    }
+    
+    // Recorrido en postorden
+    public postorder(): number[] {
+        const result: number[] = [];
+        this.postorderHelper(this.root, result);
+        return result;
+    }
+    
+    private postorderHelper(node: NodeRBT, result: number[]): void {
+        if (node !== this.leaf) {
+            this.postorderHelper(node.getLeftChild(), result);
+            this.postorderHelper(node.getRightChild(), result);
+            result.push(node.getData());
+        }
+    }
 
 }
 // Inicialización y manejo de eventos
