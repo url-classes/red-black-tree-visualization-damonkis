@@ -389,3 +389,15 @@ document.getElementById("search-node")!.addEventListener("click", () => {
     const result = tree.search(value);
     alert(result.getData() !== 0 ? `Nodo encontrado: ${result.getData()}` : "Nodo no encontrado");
 });
+document.getElementById("show-traversals")!.addEventListener("click", () => {
+    const inorderResult = tree.inorder();
+    const preorderResult = tree.preorder();
+    const postorderResult = tree.postorder();
+
+    const resultsDiv = document.getElementById("traversal-results")!;
+    resultsDiv.innerHTML = `
+        <p>Inorden: ${inorderResult.join(", ")}</p>
+        <p>Preorden: ${preorderResult.join(", ")}</p>
+        <p>Postorden: ${postorderResult.join(", ")}</p>
+    `;
+});
