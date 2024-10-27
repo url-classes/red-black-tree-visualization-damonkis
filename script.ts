@@ -1,15 +1,16 @@
+// Integración de D3.js
+declare const d3: any;
+
 class NodeRBT {
     private data: number;
-    private father!: NodeRBT; // NodeRBT* es un apuntador
-    private leftChild!: NodeRBT; // "!" significa que el atributo no será inicializado en el constructor ...
-    private rightChild!: NodeRBT; // ... pero que sí se inicializará en otra parte
+    private father!: NodeRBT;
+    private leftChild!: NodeRBT;
+    private rightChild!: NodeRBT;
     private color: string;
 
     constructor(data: number, isLeaf?: boolean) {
         this.data = data;
-        this.color = "RED";
-        if (isLeaf)
-            this.color = "BLACK";
+        this.color = isLeaf ? "BLACK" : "RED";
     }
 
     public getData(): number {
@@ -48,12 +49,16 @@ class NodeRBT {
         this.color = "BLACK";
     }
 
+    public setColor(color: string): void {
+        this.color = color;
+    }
+
     public getColor(): string {
         return this.color;
     }
 }
 
-export class RBTree {
+class RBTree {
     private root: NodeRBT;
     private leaf: NodeRBT;
 
@@ -62,110 +67,18 @@ export class RBTree {
         this.root = this.leaf;
     }
 
-    private fixInsert(testNode: NodeRBT): void {
-        while (testNode !== this.root && testNode.getFather().getColor() == "RED") {
-            // si el padre de testNode está en el hijo izquierdo del abuelo de testNode
-            if (testNode.getFather() === testNode.getFather().getFather().getLeftChild()) {
-                // significa que el tío es el hijo derecho del abuelo de testNode
-                let uncle: NodeRBT = testNode.getFather().getFather().getRightChild();
-                if (uncle.getColor() === "RED") {
-                    testNode.getFather().setNodeAsBlack();
-                    uncle.setNodeAsBlack();
-                    testNode.getFather().getFather().setNodeAsRed();
-                    testNode = testNode.getFather().getFather();
-                } else {
-                    // comprobamos si testNode es hijo izquierdo
-                    if (testNode === testNode.getFather().getRightChild()) {
-                        testNode = testNode.getFather();
-                        this.leftRotate(testNode);
-                    }
-                    testNode.getFather().setNodeAsBlack();
-                    testNode.getFather().getFather().setNodeAsRed();
-                    this.rightRotate(testNode.getFather().getFather());
-                }
-            } else {
-                // significa que el tío es el hijo izquierdo del abuelo de testNode
-                let uncle: NodeRBT = testNode.getFather().getFather().getLeftChild();
-                if (uncle.getColor() === "RED") {
-                    testNode.getFather().setNodeAsBlack();
-                    uncle.setNodeAsBlack();
-                    testNode.getFather().getFather().setNodeAsRed();
-                    testNode = testNode.getFather().getFather();
-                } else {
-                    // comprobamos si testNode es hijo izquierdo
-                    if (testNode === testNode.getFather().getLeftChild()) {
-                        testNode = testNode.getFather();
-                        this.rightRotate(testNode);
-                    }
-                    testNode.getFather().setNodeAsBlack();
-                    testNode.getFather().getFather().setNodeAsRed();
-                    this.leftRotate(testNode.getFather().getFather());
-                }
-            }
-        }
-        this.root.setNodeAsBlack();
-    }
-
-    private leftRotate(x: NodeRBT): void {
-        let y: NodeRBT = x.getRightChild();
-        x.setRightChild(y.getLeftChild());
-        if (y.getLeftChild() != this.leaf)
-            y.getLeftChild().setFather(x);
-        y.setFather(x.getFather());
-        if (x.getFather() == this.leaf)
-            this.root = y;
-        else if (x === x.getFather().getLeftChild())
-            x.getFather().setLeftChild(y);
-        else
-            x.getFather().setRightChild(y);
-        y.setLeftChild(x);
-        x.setFather(y);
-    }
-
-    private rightRotate(x: NodeRBT): void {
-        let y: NodeRBT = x.getLeftChild();
-        x.setLeftChild(y.getRightChild());
-        if (y.getRightChild() != this.leaf)
-            y.getRightChild().setFather(x);
-        y.setFather(x.getFather());
-        if (x.getFather() == this.leaf)
-            this.root = y;
-        else if (x === x.getFather().getRightChild())
-            x.getFather().setRightChild(y);
-        else
-            x.getFather().setLeftChild(y);
-        y.setRightChild(x);
-        x.setFather(y);
-    }
-
-    private printNode(nodo: NodeRBT): void {
-        if (nodo.getLeftChild() !== this.leaf)
-            this.printNode(nodo.getLeftChild());
-        console.log(nodo.getData() + "(" + nodo.getColor() + ")");
-        if (nodo?.getRightChild() !== this.leaf)
-            this.printNode(nodo.getRightChild());
-    }
-
-    public printAll(): void {
-        this.printNode(this.root);
-    }
-
     public insert(data: number): void {
-
         let newNode: NodeRBT = new NodeRBT(data);
         let parent: NodeRBT = this.leaf;
         let current: NodeRBT = this.root;
         newNode.setLeftChild(this.leaf);
         newNode.setRightChild(this.leaf);
-        // Continua inserción normal de BST
+
         while (current !== this.leaf) {
             parent = current;
-            if (newNode.getData() < current.getData()) {
-                current = current.getLeftChild();
-            } else {
-                current = current.getRightChild();
-            }
+            current = newNode.getData() < current.getData() ? current.getLeftChild() : current.getRightChild();
         }
+
         newNode.setFather(parent);
         if (parent === this.leaf) {
             this.root = newNode;
@@ -175,15 +88,131 @@ export class RBTree {
             parent.setRightChild(newNode);
         }
 
-        // Propiedades del RBT
         if (newNode.getFather() === this.leaf) {
-            newNode.setNodeAsBlack()
+            newNode.setNodeAsBlack();
             return;
         }
-        if (newNode.getFather().getFather() == this.leaf)
-            return;
-        // corregir inserción
+        if (newNode.getFather().getFather() == this.leaf) return;
+
         this.fixInsert(newNode);
+    }
+
+    private fixInsert(node: NodeRBT): void {
+        while (node !== this.root && node.getFather().getColor() == "RED") {
+            if (node.getFather() === node.getFather().getFather().getLeftChild()) {
+                let uncle: NodeRBT = node.getFather().getFather().getRightChild();
+                if (uncle.getColor() === "RED") {
+                    node.getFather().setNodeAsBlack();
+                    uncle.setNodeAsBlack();
+                    node.getFather().getFather().setNodeAsRed();
+                    node = node.getFather().getFather();
+                } else {
+                    if (node === node.getFather().getRightChild()) {
+                        node = node.getFather();
+                        this.leftRotate(node);
+                    }
+                    node.getFather().setNodeAsBlack();
+                    node.getFather().getFather().setNodeAsRed();
+                    this.rightRotate(node.getFather().getFather());
+                }
+            } else {
+                let uncle: NodeRBT = node.getFather().getFather().getLeftChild();
+                if (uncle.getColor() === "RED") {
+                    node.getFather().setNodeAsBlack();
+                    uncle.setNodeAsBlack();
+                    node.getFather().getFather().setNodeAsRed();
+                    node = node.getFather().getFather();
+                } else {
+                    if (node === node.getFather().getLeftChild()) {
+                        node = node.getFather();
+                        this.rightRotate(node);
+                    }
+                    node.getFather().setNodeAsBlack();
+                    node.getFather().getFather().setNodeAsRed();
+                    this.leftRotate(node.getFather().getFather());
+                }
+            }
+        }
+        this.root.setNodeAsBlack();
+    }
+
+    private leftRotate(x: NodeRBT): void {
+        let y: NodeRBT = x.getRightChild();
+        x.setRightChild(y.getLeftChild());
+        if (y.getLeftChild() != this.leaf) y.getLeftChild().setFather(x);
+        y.setFather(x.getFather());
+        if (x.getFather() == this.leaf) this.root = y;
+        else if (x === x.getFather().getLeftChild()) x.getFather().setLeftChild(y);
+        else x.getFather().setRightChild(y);
+        y.setLeftChild(x);
+        x.setFather(y);
+    }
+
+    private rightRotate(x: NodeRBT): void {
+        let y: NodeRBT = x.getLeftChild();
+        x.setLeftChild(y.getRightChild());
+        if (y.getRightChild() != this.leaf) y.getRightChild().setFather(x);
+        y.setFather(x.getFather());
+        if (x.getFather() == this.leaf) this.root = y;
+        else if (x === x.getFather().getRightChild()) x.getFather().setRightChild(y);
+        else x.getFather().setLeftChild(y);
+        y.setRightChild(x);
+        x.setFather(y);
+    }
+
+    public search(data: number): NodeRBT {
+        let current = this.root;
+        while (current !== this.leaf && current.getData() !== data) {
+            current = data < current.getData() ? current.getLeftChild() : current.getRightChild();
+        }
+        return current;
+    }
+
+    public delete(data: number): void {
+        let node = this.search(data);
+        if (node === this.leaf) return;
+
+        let originalColor = node.getColor();
+        let x: NodeRBT;
+
+        if (node.getLeftChild() === this.leaf) {
+            x = node.getRightChild();
+            this.transplant(node, node.getRightChild());
+        } else if (node.getRightChild() === this.leaf) {
+            x = node.getLeftChild();
+            this.transplant(node, node.getLeftChild());
+        } else {
+            let successor = this.minimum(node.getRightChild());
+            originalColor = successor.getColor();
+            x = successor.getRightChild();
+            if (successor.getFather() === node) {
+                x.setFather(successor);
+            } else {
+                this.transplant(successor, successor.getRightChild());
+                successor.setRightChild(node.getRightChild());
+                successor.getRightChild().setFather(successor);
+            }
+            this.transplant(node, successor);
+            successor.setLeftChild(node.getLeftChild());
+            successor.getLeftChild().setFather(successor);
+            successor.setNodeAsBlack();
+        }
+
+        if (originalColor === "BLACK") {
+            this.fixDelete(x);
+        }
+    }
+
+    private transplant(u: NodeRBT, v: NodeRBT): void {
+        if (u.getFather() === this.leaf) this.root = v;
+        else if (u === u.getFather().getLeftChild()) u.getFather().setLeftChild(v);
+        else u.getFather().setRightChild(v);
+        v.setFather(u.getFather());
+    }
+
+    private minimum(n: NodeRBT): NodeRBT {
+        while (n.getLeftChild() !== this.leaf) n = n.getLeftChild();
+        return n;
     }
 
     private fixDelete(x: NodeRBT): void {
@@ -191,134 +220,128 @@ export class RBTree {
             if (x === x.getFather().getLeftChild()) {
                 let sibling = x.getFather().getRightChild();
                 if (sibling.getColor() === "RED") {
-                    sibling.setNodeAsBlack(); 
+                    sibling.setColor("BLACK");
                     x.getFather().setNodeAsRed();
                     this.leftRotate(x.getFather());
                     sibling = x.getFather().getRightChild();
                 }
                 if (sibling.getLeftChild().getColor() === "BLACK" && sibling.getRightChild().getColor() === "BLACK") {
-                    sibling.setNodeAsRed(); 
+                    sibling.setNodeAsRed();
                     x = x.getFather();
                 } else {
                     if (sibling.getRightChild().getColor() === "BLACK") {
-                        sibling.getLeftChild().setNodeAsBlack();
+                        sibling.getLeftChild().setColor("BLACK");
                         sibling.setNodeAsRed();
                         this.rightRotate(sibling);
                         sibling = x.getFather().getRightChild();
                     }
-                    sibling.setNodeAsBlack(); 
+                    sibling.setColor(x.getFather().getColor());
                     x.getFather().setNodeAsBlack();
                     sibling.getRightChild().setNodeAsBlack();
                     this.leftRotate(x.getFather());
                     x = this.root;
                 }
             } else {
-                
+                let sibling = x.getFather().getLeftChild();
+                if (sibling.getColor() === "RED") {
+                    sibling.setColor("BLACK");
+                    x.getFather().setNodeAsRed();
+                    this.rightRotate(x.getFather());
+                    sibling = x.getFather().getLeftChild();
+                }
+                if (sibling.getRightChild().getColor() === "BLACK" && sibling.getLeftChild().getColor() === "BLACK") {
+                    sibling.setNodeAsRed();
+                    x = x.getFather();
+                } else {
+                    if (sibling.getLeftChild().getColor() === "BLACK") {
+                        sibling.getRightChild().setColor("BLACK");
+                        sibling.setNodeAsRed();
+                        this.leftRotate(sibling);
+                        sibling = x.getFather().getLeftChild();
+                    }
+                    sibling.setColor(x.getFather().getColor());
+                    x.getFather().setNodeAsBlack();
+                    sibling.getLeftChild().setNodeAsBlack();
+                    this.rightRotate(x.getFather());
+                    x = this.root;
+                }
             }
         }
         x.setNodeAsBlack();
     }
-    
+    // Dibuja el árbol usando D3.js
+    public drawTree(): void {
+        d3.select("#tree-canvas").selectAll("*").remove();
+        const width = 800;
+        const height = 600;
+        const svg = d3.select("#tree-canvas").append("svg")
+            .attr("width", width)
+            .attr("height", height);
 
-    private transplant(u: NodeRBT, v: NodeRBT): void {
-        if (u.getFather() === this.leaf) {
-            this.root = v;
-        } else if (u === u.getFather().getLeftChild()) {
-            u.getFather().setLeftChild(v);
-        } else {
-            u.getFather().setRightChild(v);
-        }
-        v.setFather(u.getFather());
-    }
+        const drawNode = (node: NodeRBT, x: number, y: number, level: number) => {
+            if (node !== this.leaf) {
+                svg.append("circle")
+                    .attr("cx", x)
+                    .attr("cy", y)
+                    .attr("r", 20)
+                    .attr("fill", node.getColor() === "RED" ? "red" : "black");
 
-    public delete(data: number): void {
-        let z: NodeRBT = this.search(data);
-        if (z === this.leaf) return;
+                svg.append("text")
+                    .attr("x", x)
+                    .attr("y", y + 5)
+                    .attr("text-anchor", "middle")
+                    .attr("fill", "white")
+                    .text(node.getData());
 
-        let y: NodeRBT = z;
-        let yOriginalColor: string = y.getColor();
-        let x: NodeRBT;
+                if (node.getLeftChild() !== this.leaf) {
+                    svg.append("line")
+                        .attr("x1", x)
+                        .attr("y1", y)
+                        .attr("x2", x - 50 / level)
+                        .attr("y2", y + 50)
+                        .attr("stroke", "gray");
 
-        if (z.getLeftChild() === this.leaf) {
-            x = z.getRightChild();
-            this.transplant(z, z.getRightChild());
-        } else if (z.getRightChild() === this.leaf) {
-            x = z.getLeftChild();
-            this.transplant(z, z.getLeftChild());
-        } else {
-            y = this.minimum(z.getRightChild());
-            yOriginalColor = y.getColor();
-            x = y.getRightChild();
-            if (y.getFather() === z) {
-                x.setFather(y);
-            } else {
-                this.transplant(y, y.getRightChild());
-                y.setRightChild(z.getRightChild());
-                y.getRightChild().setFather(y);
+                    drawNode(node.getLeftChild(), x - 50 / level, y + 50, level + 1);
+                }
+
+                if (node.getRightChild() !== this.leaf) {
+                    svg.append("line")
+                        .attr("x1", x)
+                        .attr("y1", y)
+                        .attr("x2", x + 50 / level)
+                        .attr("y2", y + 50)
+                        .attr("stroke", "gray");
+
+                    drawNode(node.getRightChild(), x + 50 / level, y + 50, level + 1);
+                }
             }
-            this.transplant(z, y);
-            y.setLeftChild(z.getLeftChild());
-            y.getLeftChild().setFather(y);
-            y.setNodeAsBlack();
-        }
+        };
 
-        if (yOriginalColor === "BLACK") {
-            this.fixDelete(x);
-        }
+        drawNode(this.root, width / 2, 40, 1);
     }
 
-    public search(data: number): NodeRBT {
-        let current = this.root;
-        while (current !== this.leaf && current.getData() !== data) {
-            if (data < current.getData()) {
-                current = current.getLeftChild();
-            } else {
-                current = current.getRightChild();
-            }
-        }
-        return current;
-    }
-
-    private minimum(n: NodeRBT): NodeRBT {
-        while (n.getLeftChild() !== this.leaf) {
-            n = n.getLeftChild();
-        }
-        return n;
-    }
-
-    private printInorder(nodo: NodeRBT): void {
-        if (nodo !== this.leaf) {
-            this.printInorder(nodo.getLeftChild());
-            console.log(nodo.getData() + "(" + nodo.getColor() + ")");
-            this.printInorder(nodo.getRightChild());
-        }
-    }
-
-    private printPreorder(nodo: NodeRBT): void {
-        if (nodo !== this.leaf) {
-            console.log(nodo.getData() + "(" + nodo.getColor() + ")");
-            this.printPreorder(nodo.getLeftChild());
-            this.printPreorder(nodo.getRightChild());
-        }
-    }
-
-    private printPostorder(nodo: NodeRBT): void {
-        if (nodo !== this.leaf) {
-            this.printPostorder(nodo.getLeftChild());
-            this.printPostorder(nodo.getRightChild());
-            console.log(nodo.getData() + "(" + nodo.getColor() + ")");
-        }
-    }
-
-    public printInorderAll(): void {
-        this.printInorder(this.root);
-    }
-
-    public printPreorderAll(): void {
-        this.printPreorder(this.root);
-    }
-
-    public printPostorderAll(): void {
-        this.printPostorder(this.root);
-    }
 }
+// Inicialización y manejo de eventos
+const tree = new RBTree();
+
+document.getElementById("insert-node")!.addEventListener("click", () => {
+    const value = parseInt((document.getElementById("node-value") as HTMLInputElement).value);
+    if (!isNaN(value)) {
+        tree.insert(value);
+        tree.drawTree();
+    }
+});
+
+document.getElementById("delete-node")!.addEventListener("click", () => {
+    const value = parseInt((document.getElementById("node-value") as HTMLInputElement).value);
+    if (!isNaN(value)) {
+        tree.delete(value);
+        tree.drawTree();
+    }
+});
+
+document.getElementById("search-node")!.addEventListener("click", () => {
+    const value = parseInt((document.getElementById("search-value") as HTMLInputElement).value);
+    const result = tree.search(value);
+    alert(result.getData() !== 0 ? `Nodo encontrado: ${result.getData()}` : "Nodo no encontrado");
+});
