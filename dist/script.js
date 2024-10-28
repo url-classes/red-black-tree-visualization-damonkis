@@ -379,17 +379,14 @@ document.getElementById("show-traversals").addEventListener("click", function ()
 document.getElementById("search-node").addEventListener("click", function () {
     var value = parseInt(document.getElementById("search-value").value);
     var result = tree.search(value);
+    var nodeInfoDiv = document.getElementById("node-info");
     if (result.getData() !== 0) {
         var parent_2 = result.getFather().getData() !== 0 ? result.getFather().getData() : "null";
         var leftChild = result.getLeftChild().getData() !== 0 ? result.getLeftChild().getData() : "null";
         var rightChild = result.getRightChild().getData() !== 0 ? result.getRightChild().getData() : "null";
-        alert("Nodo encontrado: ".concat(result.getData(), "\n") +
-            "Color: ".concat(result.getColor(), "\n") +
-            "Padre: ".concat(parent_2, "\n") +
-            "Hijo Izquierdo: ".concat(leftChild, "\n") +
-            "Hijo Derecho: ".concat(rightChild));
+        nodeInfoDiv.innerHTML = "\n            <p><strong>Nodo encontrado:</strong> ".concat(result.getData(), "</p>\n            <p><strong>Color:</strong> ").concat(result.getColor(), "</p>\n            <p><strong>Padre:</strong> ").concat(parent_2, "</p>\n            <p><strong>Hijo Izquierdo:</strong> ").concat(leftChild, "</p>\n            <p><strong>Hijo Derecho:</strong> ").concat(rightChild, "</p>\n        ");
     }
     else {
-        alert("Nodo no encontrado");
+        nodeInfoDiv.innerHTML = "<p>Nodo no encontrado</p>";
     }
 });
