@@ -89,8 +89,8 @@ class RBTree {
             parent.setRightChild(newNode);
         }
 
-        newNode.setNodeAsRed(); // Insertamos como rojo inicialmente
-        this.fixInsert(newNode); // Balanceamos el árbol
+        newNode.setNodeAsRed(); 
+        this.fixInsert(newNode); 
     }
 
     private fixInsert(node: NodeRBT): void {
@@ -286,7 +286,7 @@ class RBTree {
         return current;
     }
     
-    // Dibuja el árbol usando D3.js
+    
     public drawTree(): void {
         d3.select("#tree-canvas").selectAll("*").remove();
         const width = 800;
@@ -337,7 +337,7 @@ class RBTree {
         drawNode(this.root, width / 2, 40, 1);
     }
 
-    // Recorrido en inorden
+    
     public inorder(): number[] {
         const result: number[] = [];
         this.inorderHelper(this.root, result);
@@ -352,7 +352,7 @@ class RBTree {
         }
     }
 
-    // Recorrido en preorden
+    
     public preorder(): number[] {
         const result: number[] = [];
         this.preorderHelper(this.root, result);
@@ -367,7 +367,7 @@ class RBTree {
         }
     }
 
-    // Recorrido en postorden
+    
     public postorder(): number[] {
         const result: number[] = [];
         this.postorderHelper(this.root, result);
@@ -383,7 +383,7 @@ class RBTree {
     }
 
 }
-// Inicialización y manejo de eventos
+
 const tree = new RBTree();
 
 document.getElementById("insert-node")!.addEventListener("click", () => {
@@ -397,9 +397,8 @@ document.getElementById("insert-node")!.addEventListener("click", () => {
 document.getElementById("delete-node")!.addEventListener("click", () => {
     const value = parseInt((document.getElementById("delete-value") as HTMLInputElement).value);
     if (!isNaN(value)) {
-        tree.delete(value); // Elimina el nodo con el valor especificado
-        tree.drawTree();    // Redibuja el árbol
-    }
+        tree.delete(value); 
+        tree.drawTree();    
 });
 
 document.getElementById("search-node")!.addEventListener("click", () => {
@@ -425,18 +424,20 @@ document.getElementById("search-node")!.addEventListener("click", () => {
     const value = parseInt((document.getElementById("search-value") as HTMLInputElement).value);
     const result = tree.search(value);
 
+    const nodeInfoDiv = document.getElementById("node-info")!;
     if (result.getData() !== 0) {
         const parent = result.getFather().getData() !== 0 ? result.getFather().getData() : "null";
         const leftChild = result.getLeftChild().getData() !== 0 ? result.getLeftChild().getData() : "null";
         const rightChild = result.getRightChild().getData() !== 0 ? result.getRightChild().getData() : "null";
 
-        alert(`Nodo encontrado: ${result.getData()}\n` +
-              `Color: ${result.getColor()}\n` +
-              `Padre: ${parent}\n` +
-              `Hijo Izquierdo: ${leftChild}\n` +
-              `Hijo Derecho: ${rightChild}`);
+        nodeInfoDiv.innerHTML = `
+            <p><strong>Nodo encontrado:</strong> ${result.getData()}</p>
+            <p><strong>Color:</strong> ${result.getColor()}</p>
+            <p><strong>Padre:</strong> ${parent}</p>
+            <p><strong>Hijo Izquierdo:</strong> ${leftChild}</p>
+            <p><strong>Hijo Derecho:</strong> ${rightChild}</p>
+        `;
     } else {
-        alert("Nodo no encontrado");
+        nodeInfoDiv.innerHTML = `<p>Nodo no encontrado</p>`;
     }
 });
-
