@@ -4,6 +4,6 @@
 Este proyecto es una herramienta interactiva de visualización de árboles rojo-negro, desarrollada para ayudar a comprender y manipular esta estructura de datos balanceada. Permite a los usuarios insertar, buscar y eliminar nodos en un árbol rojo-negro, visualizando en tiempo real las reestructuraciones y el balanceo automático que caracterizan a este tipo de árbol. Además, ofrece la posibilidad de realizar recorridos en preorden, inorden y postorden, brindando una experiencia educativa y práctica para estudiantes y desarrolladores interesados en estructuras de datos avanzadas.
 
 # Colaboradores:
-Miguel Salguero - 1626923
-David Ixquiac - 1521223
-Ivan Ordoñez - 1567523
+- Miguel Salguero - 1626923
+- David Ixquiac - 1521223
+- Ivan Ordoñez - 1567523
