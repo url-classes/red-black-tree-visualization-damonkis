@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Árbol Rojo-Negro Proyecto no.2 Estructura de Datos 2</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="welcome-screen">
+        <h1>Bienvenido</h1>
+        <p>Árbol Rojo-Negro Proyecto #2 Estructura de Datos II</p>
+    </div>
+
+    <h1 class="main-title">Árbol Rojo-Negro Proyecto #2</h1>
+    <h2>Estructura de Datos II</h2>
+
+    <div id="control-panel">
+        <div class="input-group">
+            <input type="number" id="node-value" placeholder="Valor del nodo" />
+            <button id="insert-node">Insertar Nodo</button>
+        </div>
+        <div class="input-group">
+            <input type="number" id="search-value" placeholder="Buscar nodo" />
+            <button id="search-node">Buscar Nodo</button>
+        </div>
+        <div class="input-group">
+            <input type="number" id="delete-value" placeholder="Valor a eliminar">
+            <button id="delete-node">Eliminar Nodo</button>
+        </div>
+        <div class="button-group">
+            <button id="show-traversals">Mostrar Recorridos</button>
+            <button id="toggle-theme">Modo Claro/Oscuro</button>
+        </div>
+    </div>
+
+    <div id="main-container">
+       
+        <div id="visualization">
+            <svg width="800" height="500" id="tree-canvas" viewBox="0 0 800 500"></svg>
+        </div>
+
+        
+        <div id="node-info" class="results-container">
+            <h2>Información del Nodo</h2>
+            <p>Seleccione un nodo para ver los detalles.</p>
+        </div>
+
+       
+        <div id="traversal-results" class="results-container">
+            <h2>Resultados de Recorridos</h2>
+        </div>
+    </div>
+
+    <script src="https://d3js.org/d3.v6.min.js"></script>
+    <script src="dist/script.js"></script>
+
+    <script>
+        const toggleButton = document.getElementById('toggle-theme');
+        const welcomeScreen = document.getElementById('welcome-screen');
+
+        setTimeout(() => {
+            welcomeScreen.style.opacity = '0';
+            setTimeout(() => {
+                welcomeScreen.style.display = 'none';
+            }, 500); 
+        }, 2000); 
+
+        toggleButton.addEventListener('click', () => {
+            document.body.classList.toggle('dark-mode');
+        });
+    </script>
+</body>
+</html>
+
